@@ -7,7 +7,8 @@ import java.util.List;
 @Table(name = "clients")
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+    @SequenceGenerator(name = "client_seq", sequenceName = "clients_client_id_seq", allocationSize = 1)
     @Column(name = "client_id")
     private Long client_id;
 

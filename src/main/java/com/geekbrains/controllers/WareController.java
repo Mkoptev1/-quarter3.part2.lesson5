@@ -18,6 +18,7 @@ import java.util.Optional;
 @RequestMapping("/ware")
 public class WareController {
     private WareServiceImpl wareServiceImpl;
+    private String templateFolder = "ware/";
 
     @Autowired
     public void setWareServiceImpl(WareServiceImpl wareServiceImpl) {
@@ -36,7 +37,7 @@ public class WareController {
         Pageable firstPageWithFiveElements = PageRequest.of(pageNumber, 5, Sort.by(Sort.Direction.ASC,"ware_id"));
         Page<Ware> wareList = wareServiceImpl.showAllWare(firstPageWithFiveElements);
         model.addAttribute("ware", wareList);
-        return "ware";
+        return templateFolder + "ware-list";
     }
 
     // Форма добавления товара
@@ -45,7 +46,7 @@ public class WareController {
     public String newWare(Model model) {
         Ware ware = new Ware();
         model.addAttribute("ware", ware);
-        return "add-ware";
+        return templateFolder + "add-ware";
     }
 
     // Сохранение товара
@@ -71,7 +72,7 @@ public class WareController {
         Optional<Ware> editWare = Optional.of(new Ware());
         editWare = wareServiceImpl.get(ware_id);
         model.addAttribute("ware", editWare);
-        return "edit-ware";
+        return templateFolder + "edit-ware";
     }
 
     // Фильтрация товаров
@@ -80,7 +81,7 @@ public class WareController {
     public String filterWare(Model uiModel, @PathVariable(value="filter") Long filter_id) {
         List<Ware> wareList = wareServiceImpl.findMaxPrice(filter_id);
         uiModel.addAttribute("ware", wareList);
-        return "ware-list";
+        return templateFolder + "ware-list";
     }
 
     // Поиск товара по клиенту
@@ -96,6 +97,6 @@ public class WareController {
         Optional<Ware> ware = Optional.of(new Ware());
         ware = wareServiceImpl.get(clientId);
         model.addAttribute("ware", ware);
-        return "search-ware-by-client-result";
+        return templateFolder + "search-ware-by-client-result";
     }
 }

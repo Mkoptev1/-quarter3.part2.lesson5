@@ -21,15 +21,14 @@ public class WareServiceImpl{
         this.wareRepository = _wareRepository;
     }
 
-
     @Transactional(readOnly = true)
     public Page<Ware> getAll(Pageable pageable) {
         return (Page<Ware>) wareRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Optional<Ware> get(Long id) {
-        return wareRepository.findById(id);
+    public Optional<Ware> get(Long ware_id) {
+        return wareRepository.findById(ware_id);
     }
 
     @Transactional

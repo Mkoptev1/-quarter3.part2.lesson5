@@ -11,17 +11,14 @@
 
 <body>
     <div>
-        <h1>Редактировать товар</h1>
+        <h1>Добавить покупателя</h1>
         <br>
         <div class="container">
-            <form th:action="@{/ware/save-ware}" th:object="${ware}" method="post">
-                <input readonly="readonly" type="hidden" th:field="*{ware_id}"/>
-                Наименование товара: <input type="text" th:field="*{ware_name}"/>
-                <br><br>
-                Стоимость товара: <input type="number" th:field="*{ware_cost}"/>
+            <form th:action="@{/client/save-client}" th:object="${client}" method="post">
+                Имя покупателя: <input type="text" th:field="*{client_name}"/>
                 <br><br>
                 <div class="submit">
-                    <button name="addWare" type="submit">Сохранить товар</button>
+                    <button name="addClient" type="submit">Добавить покупателя</button>
                 </div>
             </form>
         </div>

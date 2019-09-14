@@ -3,17 +3,21 @@ package com.geekbrains.controllers;
 import com.geekbrains.entities.Client;
 import com.geekbrains.services.ClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/clients")
+@RequestMapping("/client")
 public class ClientsController {
     private ClientServiceImpl clientServiceImpl;
+    private String templateFolder = "client/";
 
     @Autowired
     public void setClientServiceImpl(ClientServiceImpl _clientServiceImpl) {
@@ -21,69 +25,52 @@ public class ClientsController {
     }
 
     // Список клиентов
-    // http://localhost:8189/app/clients/client-list
-    @RequestMapping("/client-list")
-    public String getClientList(Model model) {
-        List<Client> clientList = clientServiceImpl.getAll();
-        model.addAttribute("clients", clientList);
-        return "client-list";
+    // http://localhost:8189/app/сlient
+    @GetMapping("/")
+    public String getClientList(Model model, @RequestParam(name = "page", required = false, defaultValue = "0") int pageNumber) {
+        // Пагинация начинается с 0 элемента
+        if (pageNumber > 0) {
+            pageNumber --;
+        }
+
+        Pageable firstPageWithFiveElements = PageRequest.of(pageNumber, 5, Sort.by(Sort.Direction.ASC,"client_id"));
+        Page<Client> clientList = clientServiceImpl.showAllClient(firstPageWithFiveElements);
+        model.addAttribute("client", clientList);
+        return templateFolder + "client-list";
     }
 
     // Форма добавления клиента
-    // http://localhost:8189/app/clients/add-client
-    @RequestMapping("/add-client")
+    // http://localhost:8189/app/client/add-client
+    @GetMapping("/add-client")
     public String newClient(Model model) {
-        Client client = new Client();
-        model.addAttribute("client", client);
-        return "add-client";
+        Client addClient = new Client();
+        model.addAttribute("client", addClient);
+        return templateFolder + "add-client";
     }
 
     // Сохранение клиента
-    // http://localhost:8189/app/clients/save-client
-    @RequestMapping("/save-client")
+    // http://localhost:8189/app/client/save-client
+    @PostMapping("/save-client")
     public String saveClient(@ModelAttribute("client") Client client) {
         clientServiceImpl.save(client);
-        return "redirect:client-list";
+        return "redirect:/client/";
     }
 
-    // Форма удаления клиента
-    // http://localhost:8189/app/clients/del-client-form
-    @RequestMapping("/del-client-form")
-    public String delClient() {
-        return "del-client-form";
+    // Удаление клиента
+    // http://localhost:8189/app/client/del-client/1
+    @GetMapping("/del-client/{client_id}")
+    public String delClient(@PathVariable(name = "client_id") Long client_id) {
+        clientServiceImpl.delete(client_id);
+        return "redirect:/client/";
     }
 
-    // Сохранение удаленного клиента
-    // http://localhost:8189/app/clients/save-del-client
-    @RequestMapping("/save-del-client")
-    public String saveDelClient(@ModelAttribute("client") Client client) {
-        //clientService.saveWare(client);
-        return "redirect:client-list";
+    // Форма редактирования клиента
+    // http://localhost:8189/app/client/edit-client/1
+    @GetMapping("/edit-client/{client_id}")
+    public String editClient(Model model, @PathVariable(name = "client_id") Long client_id) {
+        Optional<Client> editClient = Optional.of(new Client());
+        editClient = clientServiceImpl.get(client_id);
+        model.addAttribute("client", editClient);
+        return templateFolder + "edit-client";
     }
-
-    // Поиск клиента по товару
-    // http://localhost:8189/app/clients/search-client-by-ware-form
-    @RequestMapping("/search-client-by-ware-form")
-    public String searchClientByWareForm() {
-        return "search-client-by-ware-form";
-    }
-
-    // Результат поиска клиента по товару
-    @RequestMapping(path="/search-client-by-ware-result", method=RequestMethod.GET)
-    public String searchWareResult(@RequestParam("id") long clientId, Model model) {
-        Optional<Client> client = Optional.of(new Client());
-        client = clientServiceImpl.get(clientId);
-        model.addAttribute("client", client);
-        return "search-client-by-ware-result";
-    }
-/*
-    // Отчет по заказам
-    // http://localhost:8189/app/clients/rep-form-client-ware
-    @RequestMapping("/rep-form-client-ware")
-    public String geClientWareList(Model model) {
-        List<ClientWareLink> clientWareLinkList = clientsOrderServiceImpl.getClientsOrderList();
-        model.addAttribute("clientsOrder", clientWareLinkList);
-        return "rep-form-client-ware";
-    }
- */
 }

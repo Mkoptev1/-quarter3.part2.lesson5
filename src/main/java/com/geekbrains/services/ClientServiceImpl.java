@@ -3,6 +3,8 @@ package com.geekbrains.services;
 import com.geekbrains.entities.Client;
 import com.geekbrains.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,22 @@ public class ClientServiceImpl {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Client> get(Long id) {
-        return clientRepository.findById(id);
+    public Optional<Client> get(Long client_id) {
+        return clientRepository.findById(client_id);
     }
 
     @Transactional
     public void save(Client article) {
         clientRepository.save(article);
+    }
+
+    @Transactional
+    public void delete(Long client_id) {
+        clientRepository.deleteById(client_id);
+    }
+
+    @Transactional
+    public Page<Client> showAllClient(Pageable pageable) {
+        return (Page<Client>) clientRepository.showAllClient(pageable);
     }
 }
